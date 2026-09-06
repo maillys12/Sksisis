@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#050608">
+  <title>MONTYSTORE Mail Center</title>
+  <style>
+    :root { color-scheme:light; --navy:#101d3a; --blue:#246bfd; --blue-dark:#1754cf; --sky:#eaf2ff; --bg:#f5f7fb; --card:#fff; --text:#14213d; --muted:#66748c; --line:#e1e7f0; --green:#159a69; --danger:#dc3854; }
+    * { box-sizing:border-box; }
+    html,body { margin:0; min-height:100%; }
+    body { color:var(--text); background:var(--bg); font-family:-apple-system,BlinkMacSystemFont,"Noto Sans Thai","Segoe UI",sans-serif; -webkit-font-smoothing:antialiased; }
+    button,input { font:inherit; }
+    .header { position:sticky; top:0; z-index:20; border-bottom:1px solid rgba(218,225,236,.8); background:rgba(255,255,255,.88); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); }
+    .nav { display:flex; align-items:center; justify-content:space-between; width:min(980px,100%); height:72px; margin:auto; padding:0 22px; }
+    .brand { display:flex; align-items:center; gap:12px; }
+    .logo-box { position:relative; display:grid; place-items:center; width:47px; height:47px; flex:none; overflow:hidden; border-radius:15px; color:#fff; background:linear-gradient(145deg,#2583ff,#153b9d); box-shadow:0 8px 20px rgba(36,107,253,.22); font-size:20px; font-weight:900; }
+    .brand-image { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+    .brand-name { font-size:15px; font-weight:850; letter-spacing:.2px; }
+    .brand-sub { margin-top:2px; color:#7a879b; font-size:11px; }
+    .online { display:flex; align-items:center; gap:7px; padding:7px 11px; border:1px solid #dce8e3; border-radius:999px; color:#26765c; background:#f4fbf8; font-size:12px; font-weight:700; }
+    .online-dot { width:7px; height:7px; border-radius:50%; background:#1db77d; box-shadow:0 0 0 4px rgba(29,183,125,.12); }
+    .page { width:min(980px,100%); margin:auto; padding:34px 22px 64px; }
+    .hero { position:relative; overflow:hidden; display:grid; grid-template-columns:1.1fr .9fr; gap:42px; align-items:center; min-height:330px; padding:48px; border-radius:28px; color:#fff; background:linear-gradient(130deg,#101d3a 4%,#173872 58%,#205fd3 100%); box-shadow:0 22px 55px rgba(25,55,112,.18); }
+    .hero::before { content:""; position:absolute; width:360px; height:360px; right:-120px; top:-190px; border:1px solid rgba(255,255,255,.12); border-radius:50%; box-shadow:0 0 0 54px rgba(255,255,255,.035),0 0 0 108px rgba(255,255,255,.025); }
+    .hero-copy,.search-panel { position:relative; z-index:1; }
+    .badge { display:inline-flex; align-items:center; gap:8px; margin-bottom:18px; padding:7px 11px; border:1px solid rgba(255,255,255,.18); border-radius:999px; color:#cfe2ff; background:rgba(255,255,255,.08); font-size:11px; font-weight:800; letter-spacing:.7px; }
+    .badge svg { width:15px; }
+    h1 { max-width:500px; margin:0; font-size:clamp(32px,5vw,48px); line-height:1.13; letter-spacing:-1.2px; }
+    .hero-copy p { max-width:500px; margin:17px 0 0; color:#ccdbf3; font-size:15px; line-height:1.7; }
+    .search-panel { padding:21px; border:1px solid rgba(255,255,255,.16); border-radius:22px; background:rgba(255,255,255,.10); box-shadow:inset 0 1px rgba(255,255,255,.10); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+    .app-picker-label { display:block; margin:0 0 9px 2px; color:#e8f1ff; font-size:13px; font-weight:750; }
+    .app-picker { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-bottom:10px; }
+    .app-choice { display:flex; align-items:center; justify-content:center; gap:9px; min-height:50px; padding:8px 12px; border:1px solid rgba(255,255,255,.13); border-radius:13px; color:#b8c4d7; background:rgba(255,255,255,.045); font-weight:800; cursor:pointer; transition:.18s; }
+    .app-choice:hover { border-color:rgba(126,171,255,.45); color:#fff; }
+    .app-choice.selected { border-color:#609cff; color:#fff; background:rgba(77,141,255,.18); box-shadow:0 0 0 3px rgba(77,141,255,.08); }
+    .app-mark { display:grid; place-items:center; width:29px; height:29px; border-radius:9px; color:#fff; background:#e50914; font-size:15px; font-weight:950; }
+    .app-choice[data-app="disney"] .app-mark { background:linear-gradient(145deg,#174ca9,#3c88ec); font-size:10px; }
+    .label { display:block; margin:0 0 9px 2px; color:#e8f1ff; font-size:13px; font-weight:700; }
+    .input-wrap { position:relative; }
+    .input-wrap svg { position:absolute; left:15px; top:50%; width:19px; transform:translateY(-50%); color:#798ba7; }
+    input { width:100%; height:56px; padding:0 16px 0 44px; border:1px solid transparent; border-radius:14px; outline:none; color:#17243f; background:#fff; font-size:15px; box-shadow:0 8px 22px rgba(4,16,46,.14); transition:.18s; }
+    input::placeholder { color:#98a3b5; }
+    input:focus { border-color:#86b2ff; box-shadow:0 0 0 4px rgba(121,171,255,.2),0 8px 22px rgba(4,16,46,.14); }
+    input:disabled { opacity:.48; cursor:not-allowed; }
+    .search-btn { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; min-height:53px; margin-top:10px; border:0; border-radius:14px; color:#113773; background:#fff; font-weight:850; cursor:pointer; transition:.18s; }
+    .search-btn:hover { transform:translateY(-1px); background:#f4f8ff; }
+    .search-btn:disabled { opacity:.7; cursor:wait; transform:none; }
+    .search-btn svg { width:19px; }
+    .helper { display:flex; align-items:flex-start; gap:7px; margin:11px 3px 0; color:#c2d3ed; font-size:11px; line-height:1.45; }
+    .helper svg { width:14px; flex:none; margin-top:1px; }
+    .benefits { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:18px; }
+    .benefit { display:flex; align-items:center; gap:12px; padding:16px 17px; border:1px solid var(--line); border-radius:17px; background:#fff; box-shadow:0 7px 24px rgba(25,45,80,.045); }
+    .benefit-icon { display:grid; place-items:center; width:39px; height:39px; flex:none; border-radius:12px; color:var(--blue); background:var(--sky); }
+    .benefit-icon svg { width:20px; }
+    .benefit strong { display:block; font-size:13px; }
+    .benefit span { display:block; margin-top:3px; color:#8591a4; font-size:11px; }
+    .status { display:flex; align-items:center; gap:9px; min-height:23px; margin:25px 3px 10px; color:var(--muted); font-size:13px; }
+    .status:empty { min-height:0; margin:19px 0 0; }
+    .status.error { color:var(--danger); }
+    .spinner { width:17px; height:17px; border:2px solid #d9e3f2; border-top-color:var(--blue); border-radius:50%; animation:spin .75s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .results-head { display:none; align-items:center; justify-content:space-between; margin:24px 2px 12px; }
+    .results-head.visible { display:flex; }
+    .results-title { display:flex; align-items:center; gap:9px; font-size:16px; font-weight:850; }
+    .results-title svg { width:20px; color:var(--blue); }
+    .refresh { display:flex; align-items:center; gap:6px; padding:8px 11px; border:1px solid var(--line); border-radius:10px; color:#65738a; background:#fff; font-size:12px; font-weight:700; cursor:pointer; }
+    .refresh svg { width:14px; }
+    .list { display:grid; gap:12px; }
+    .message { position:relative; overflow:hidden; border:1px solid var(--line); border-radius:18px; background:#fff; box-shadow:0 8px 28px rgba(24,42,75,.05); transition:.18s; }
+    .message:hover { border-color:#c9d8ee; box-shadow:0 10px 34px rgba(24,42,75,.08); }
+    .message-head { padding:17px 18px; cursor:pointer; }
+    .message-top { display:flex; align-items:flex-start; gap:13px; }
+    .sender { display:grid; place-items:center; width:42px; height:42px; flex:none; border-radius:13px; color:#fff; background:linear-gradient(145deg,#2d76fb,#1847b9); font-weight:850; }
+    .message-main { min-width:0; flex:1; }
+    .subject-row { display:flex; justify-content:space-between; gap:16px; }
+    .subject { font-size:15px; font-weight:800; overflow-wrap:anywhere; }
+    time { flex:none; color:#8995a7; font-size:11px; }
+    .from { margin-top:5px; overflow:hidden; color:#748197; font-size:12px; text-overflow:ellipsis; white-space:nowrap; }
+    .preview { display:-webkit-box; margin:9px 0 0 55px; overflow:hidden; color:#7b8799; font-size:12px; line-height:1.55; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
+    .message-meta { display:flex; align-items:center; gap:8px; margin:12px 0 0 55px; }
+    .otp { display:inline-flex; align-items:center; gap:10px; padding:7px 8px 7px 11px; border:1px solid #bcd7ff; border-radius:11px; color:#1555bb; background:#edf5ff; font-size:13px; font-weight:900; letter-spacing:1px; }
+    .copy { border:0; padding:5px 8px; border-radius:7px; color:#fff; background:var(--blue); font-size:10px; font-weight:800; cursor:pointer; }
+    .view { display:flex; align-items:center; gap:7px; margin-left:auto; padding:8px 12px; border:1px solid #bcd7ff; border-radius:10px; color:#2768cf; background:#f1f6ff; font-size:11px; font-weight:800; box-shadow:0 5px 16px rgba(36,107,253,.08); }
+    .view svg { width:14px; transition:transform .18s; }
+    .message.expired { cursor:not-allowed; }
+    .message.expired .message-top,.message.expired .preview,.message.expired .message-meta { filter:blur(5px); opacity:.32; user-select:none; pointer-events:none; }
+    .expired-overlay { position:absolute; z-index:2; inset:0; display:flex; align-items:center; justify-content:center; gap:9px; padding:16px; color:#ffd3da; background:rgba(12,14,18,.58); font-size:14px; font-weight:850; text-align:center; backdrop-filter:blur(1px); -webkit-backdrop-filter:blur(1px); }
+    .expired-overlay svg { width:20px; color:#ff6075; }
+    .message.open .view svg { transform:rotate(180deg); }
+    .message-body { display:grid; grid-template-rows:0fr; border-top:0 solid transparent; transition:grid-template-rows .22s,border-color .22s; }
+    .message-body>div { overflow:hidden; }
+    .body-text { padding:0 18px; color:#4e5e75; font-size:13px; line-height:1.7; white-space:pre-wrap; overflow-wrap:anywhere; transition:padding .22s; }
+    .message.open .message-body { grid-template-rows:1fr; border-top:1px solid var(--line); }
+    .message.open .body-text { padding:18px; }
+    .viewer { position:fixed; inset:0; z-index:100; display:none; overflow:auto; padding:28px; background:rgba(17,25,39,.58); backdrop-filter:blur(7px); -webkit-backdrop-filter:blur(7px); }
+    .viewer.open { display:block; }
+    .viewer-shell { width:min(900px,100%); min-height:calc(100vh - 56px); margin:auto; overflow:hidden; border:1px solid #dce3ed; border-radius:22px; background:#fff; box-shadow:0 30px 90px rgba(7,18,38,.25); }
+    .viewer-toolbar { display:flex; align-items:center; gap:13px; min-height:62px; padding:10px 18px; border-bottom:1px solid var(--line); background:#fff; }
+    .back { display:grid; place-items:center; width:38px; height:38px; flex:none; border:1px solid var(--line); border-radius:11px; color:#53627a; background:#fff; cursor:pointer; }
+    .back svg { width:19px; }
+    .toolbar-title { font-size:14px; font-weight:800; }
+    .toolbar-sub { margin-top:2px; color:#8a96a8; font-size:11px; }
+    .viewer-content { padding:25px; }
+    .viewer-subject { margin:0 0 22px; color:#17233a; font-size:clamp(21px,4vw,30px); line-height:1.3; overflow-wrap:anywhere; }
+    .viewer-sender-row { display:flex; align-items:flex-start; gap:13px; margin-bottom:22px; }
+    .viewer-avatar { display:grid; place-items:center; width:44px; height:44px; flex:none; border-radius:50%; color:#fff; background:linear-gradient(145deg,#2d76fb,#1847b9); font-weight:850; }
+    .viewer-sender-main { min-width:0; flex:1; }
+    .viewer-from { color:#24334d; font-size:13px; font-weight:750; overflow-wrap:anywhere; }
+    .viewer-to { margin-top:4px; color:#7b8799; font-size:11px; overflow-wrap:anywhere; }
+    .viewer-date { flex:none; color:#8793a5; font-size:11px; }
+    .viewer-otp { display:none; align-items:center; gap:12px; width:max-content; margin:0 0 20px 57px; padding:9px 10px 9px 14px; border:1px solid #bcd7ff; border-radius:12px; color:#1555bb; background:#edf5ff; font-weight:900; letter-spacing:1px; }
+    .viewer-otp.visible { display:flex; }
+    .email-stage { min-height:320px; overflow:hidden; border:1px solid #e2e6ec; border-radius:14px; background:#fff; }
+    .email-loading { display:flex; align-items:center; justify-content:center; gap:10px; min-height:320px; color:#768399; font-size:13px; }
+    .email-frame { display:none; width:100%; min-height:420px; border:0; background:#fff; }
+    .email-frame.ready { display:block; }
+    .empty { padding:46px 20px; border:1px dashed #cdd7e5; border-radius:18px; color:#7c899c; background:#fff; text-align:center; }
+    .empty-icon { display:grid; place-items:center; width:56px; height:56px; margin:0 auto 13px; border-radius:16px; color:var(--blue); background:var(--sky); }
+    .empty-icon svg { width:27px; }
+    .empty strong { display:block; margin-bottom:5px; color:#2c3b55; font-size:15px; }
+    footer { margin-top:34px; color:#8a95a7; text-align:center; font-size:11px; }
+    @media(max-width:760px) { .nav{height:64px;padding:0 15px}.logo-box{width:42px;height:42px;border-radius:13px}.brand-sub{display:none}.page{padding:18px 13px 50px}.hero{display:block;min-height:0;padding:29px 18px;border-radius:22px}.hero-copy{text-align:center}.badge{margin-bottom:14px}h1{font-size:32px}.hero-copy p{margin:12px auto 22px;font-size:14px}.search-panel{padding:14px;border-radius:17px}.benefits{gap:7px}.benefit{display:block;padding:12px 6px;text-align:center}.benefit-icon{width:34px;height:34px;margin:0 auto 7px}.benefit span{font-size:10px}.message-meta,.preview{margin-left:0}.view{display:flex;padding:7px 10px}.viewer{padding:0;background:#fff}.viewer-shell{min-height:100vh;border:0;border-radius:0;box-shadow:none}.viewer-toolbar{position:sticky;top:0;z-index:3}.viewer-content{padding:20px 14px}.viewer-date{display:none}.viewer-otp{margin-left:0}.email-stage{margin:0 -14px;border-width:1px 0;border-radius:0} }
+    @media(prefers-reduced-motion:reduce) { * { animation:none!important; transition:none!important; } }
+  </style>
+  <style>
+    :root { color-scheme:dark; --navy:#07090d; --blue:#4d8dff; --blue-dark:#2f6fe8; --sky:rgba(77,141,255,.11); --bg:#050608; --card:#0c0e12; --text:#f4f7fb; --muted:#929cab; --line:rgba(255,255,255,.09); --green:#42d49b; --danger:#ff6075; }
+    body { position:relative; min-height:100vh; overflow-x:hidden; background:#050608; }
+    body::before { content:""; position:fixed; z-index:-2; inset:-22%; background:radial-gradient(circle at 22% 28%,rgba(48,105,230,.13),transparent 24%),radial-gradient(circle at 78% 70%,rgba(49,91,185,.10),transparent 26%); animation:ambientMove 16s ease-in-out infinite alternate; pointer-events:none; }
+    body::after { content:""; position:fixed; z-index:-1; inset:0; opacity:.28; background-image:radial-gradient(rgba(255,255,255,.20) .55px,transparent .55px); background-size:29px 29px; mask-image:linear-gradient(to bottom,black,transparent 85%); -webkit-mask-image:linear-gradient(to bottom,black,transparent 85%); animation:gridDrift 22s linear infinite; pointer-events:none; }
+    @keyframes ambientMove { from { transform:translate3d(-2%,0,0) scale(1); } to { transform:translate3d(3%,2%,0) scale(1.08); } }
+    @keyframes gridDrift { to { background-position:29px 29px; } }
+    .header { border-color:rgba(255,255,255,.07); background:rgba(5,6,8,.76); }
+    .nav { width:min(920px,100%); }
+    .logo-box { border:1px solid rgba(255,255,255,.10); border-radius:13px; background:#0c0e12; box-shadow:0 0 0 1px rgba(77,141,255,.08),0 12px 32px rgba(0,0,0,.35); }
+    .brand-name { color:#f7f9fc; letter-spacing:.8px; }
+    .brand-sub { color:#727c8b; }
+    .online { border-color:rgba(66,212,155,.16); color:#82dbba; background:rgba(66,212,155,.06); }
+    .page { width:min(920px,100%); padding-top:48px; }
+    .hero { display:grid; grid-template-columns:1fr; gap:28px; min-height:0; padding:58px 28px 36px; border:1px solid rgba(255,255,255,.08); border-radius:24px; color:#f6f8fc; background:rgba(11,13,17,.68); box-shadow:0 28px 80px rgba(0,0,0,.34); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); }
+    .hero::before { width:420px; height:420px; right:-260px; top:-310px; border-color:rgba(93,151,255,.16); box-shadow:0 0 90px 12px rgba(42,102,224,.10); animation:orbFloat 10s ease-in-out infinite alternate; }
+    @keyframes orbFloat { to { transform:translate(-35px,24px); } }
+    .hero-copy { text-align:center; }
+    .hero-logo { position:relative; width:112px; height:112px; margin:0 auto 18px; overflow:hidden; border:1px solid rgba(255,255,255,.14); border-radius:50%; background:#0b0e14; box-shadow:0 0 0 7px rgba(77,141,255,.05),0 18px 46px rgba(0,0,0,.40),0 0 38px rgba(55,120,240,.14); }
+    .hero-logo .brand-image { position:absolute; inset:0; display:block; width:100%; height:100%; object-fit:cover; }
+    .badge { margin-bottom:16px; border-color:rgba(255,255,255,.09); color:#8fb8ff; background:rgba(255,255,255,.035); }
+    h1 { max-width:720px; margin:auto; font-size:clamp(34px,6vw,54px); font-weight:760; letter-spacing:-1.8px; }
+    .hero-copy p { max-width:560px; margin:16px auto 0; color:#929dad; }
+    .search-panel { width:min(540px,100%); margin:auto; padding:11px; border-color:rgba(255,255,255,.08); border-radius:18px; background:rgba(255,255,255,.035); box-shadow:none; }
+    .app-picker-label { color:#aab5c5; font-size:12px; }
+    .label,.helper { display:none; }
+    .input-wrap { display:block; }
+    .input-wrap svg { left:24px; color:#737e8f; }
+    input { height:60px; padding-left:50px; padding-right:150px; border-color:rgba(255,255,255,.08); border-radius:13px; color:#f5f7fb; background:#101216; box-shadow:none; }
+    input:focus { border-color:rgba(77,141,255,.65); box-shadow:0 0 0 4px rgba(77,141,255,.10); }
+    input::placeholder { color:#626c7b; }
+    .search-btn { position:absolute; right:17px; bottom:17px; width:auto; min-height:48px; margin:0; padding:0 18px; border-radius:10px; color:#fff; background:#357af2; box-shadow:0 8px 22px rgba(47,111,232,.20); }
+    .search-btn:hover { background:#4387ff; }
+    .benefits { gap:10px; margin-top:12px; }
+    .benefit { border-color:rgba(255,255,255,.07); border-radius:15px; background:rgba(12,14,18,.72); box-shadow:none; }
+    .benefit-icon { color:#77a8ff; background:rgba(77,141,255,.09); }
+    .benefit strong { color:#e9edf4; font-weight:720; }
+    .benefit span { color:#6f7988; }
+    .status { color:#8d97a6; }
+    .refresh { border-color:rgba(255,255,255,.09); color:#9aa4b3; background:#0d0f13; }
+    .message { border-color:rgba(255,255,255,.08); border-radius:16px; background:rgba(12,14,18,.86); box-shadow:none; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+    .message:hover { border-color:rgba(92,146,255,.32); background:#0f1218; box-shadow:0 14px 38px rgba(0,0,0,.24); }
+    .sender,.viewer-avatar { color:#dce9ff; background:linear-gradient(145deg,#1d4f9f,#152d58); }
+    .subject { color:#eef2f8; }
+    time,.from,.preview,.view { color:#7d8796; }
+    .otp,.viewer-otp { border-color:rgba(77,141,255,.24); color:#91bbff; background:rgba(77,141,255,.08); }
+    .copy { background:#3478ec; }
+    .view { border-color:rgba(77,141,255,.26); color:#a9c8ff; background:rgba(77,141,255,.09); box-shadow:none; }
+    .empty { border-color:rgba(255,255,255,.11); color:#747e8d; background:rgba(12,14,18,.75); }
+    .empty strong { color:#dce2eb; }
+    .empty-icon { color:#7babff; background:rgba(77,141,255,.09); }
+    footer { color:#555e6c; }
+    .viewer { background:rgba(0,0,0,.76); }
+    .viewer-shell { border-color:rgba(255,255,255,.09); background:#090b0f; box-shadow:0 32px 100px rgba(0,0,0,.70); }
+    .viewer-toolbar { border-color:rgba(255,255,255,.08); background:#0c0e12; }
+    .back { border-color:rgba(255,255,255,.09); color:#a8b2c0; background:#12151a; }
+    .toolbar-title,.viewer-subject,.viewer-from { color:#eef2f8; }
+    .toolbar-sub,.viewer-to,.viewer-date { color:#747e8d; }
+    .email-stage { border-color:rgba(255,255,255,.10); background:#fff; }
+    .email-loading { color:#8b95a4; background:#0d0f13; }
+    @media(max-width:760px) { .page{padding-top:20px}.hero{padding:34px 15px 17px}.hero-logo{width:92px;height:92px;margin-bottom:15px}.search-panel{padding:9px}.app-choice{min-height:46px;padding:7px}.app-mark{width:26px;height:26px}input{height:58px;padding-right:58px}.search-btn{right:14px;bottom:14px;width:44px;min-height:44px;padding:0}.search-btn span{display:none}.benefits{grid-template-columns:repeat(3,1fr)}.viewer{background:#090b0f}.viewer-toolbar{background:#0c0e12}.viewer-content{background:#090b0f} }
+    @media(prefers-reduced-motion:reduce) { body::before,body::after,.hero::before { animation:none!important; } }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <nav class="nav">
+      <div class="brand">
+        <div class="logo-box"><span>M</span><?!= include('Logo'); ?></div>
+        <div><div class="brand-name">MONTYSTORE</div><div class="brand-sub">Mail Center</div></div>
+      </div>
+      <div class="online"><span class="online-dot"></span>ระบบออนไลน์</div>
+    </nav>
+  </header>
+
+  <main class="page">
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="hero-logo"><?!= include('Logo'); ?></div>
+        <div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4 7v5c0 5 3.4 8 8 9 4.6-1 8-4 8-9V7z"/><path d="m9 12 2 2 4-4"/></svg>MONTYSTORE MAIL SERVICE</div>
+        <h1>รับรหัสยืนยันตัวตนสำหรับลูกค้าร้าน MONTYSTORE</h1>
+        <p>เลือกแอป แล้วกรอกอีเมลที่ได้รับจากร้านเพื่อรับรหัสอย่างปลอดภัย</p>
+      </div>
+      <form id="searchForm" class="search-panel">
+        <span class="app-picker-label">1. เลือกแอปที่ต้องการรับรหัส</span>
+        <div class="app-picker" role="group" aria-label="เลือกแอป">
+          <button class="app-choice" type="button" data-app="netflix" aria-pressed="false"><span class="app-mark">N</span><span>Netflix</span></button>
+          <button class="app-choice" type="button" data-app="disney" aria-pressed="false"><span class="app-mark">D+</span><span>Disney+</span></button>
+        </div>
+        <label class="label" for="email">อีเมลที่ต้องการค้นหา</label>
+        <div class="input-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16v12H4z"/><path d="m4 8 8 6 8-6"/></svg><input id="email" type="email" inputmode="email" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="เลือกแอปก่อนกรอกอีเมล" required disabled></div>
+        <button id="submit" class="search-btn" type="submit" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><span>รับรหัส</span></button>
+        <div class="helper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-9h.01"/></svg>รองรับเฉพาะอีเมลที่ลงท้ายด้วย @maillys.shop</div>
+      </form>
+    </section>
+
+    <section class="benefits">
+      <div class="benefit"><div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></div><div><strong>รับข้อความรวดเร็ว</strong><span>อีเมลส่งเข้าระบบอัตโนมัติ</span></div></div>
+      <div class="benefit"><div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4 7v5c0 5 3.4 8 8 9 4.6-1 8-4 8-9V7z"/><path d="m9 12 2 2 4-4"/></svg></div><div><strong>ค้นหาเฉพาะอีเมล</strong><span>แยกข้อความตามที่อยู่ผู้รับ</span></div></div>
+      <div class="benefit"><div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><strong>พร้อมใช้ 24 ชั่วโมง</strong><span>ตรวจสอบได้ทุกอุปกรณ์</span></div></div>
+    </section>
+
+    <div id="status" class="status" aria-live="polite"></div>
+    <div id="resultsHead" class="results-head"><div class="results-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16v12H4z"/><path d="m4 8 8 6 8-6"/></svg>ข้อความที่ได้รับ</div><button id="refresh" class="refresh" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12a8 8 0 1 1-2.3-5.7L20 8"/><path d="M20 3v5h-5"/></svg>รีเฟรช</button></div>
+    <section id="list" class="list"></section>
+    <footer>© MONTYSTORE · Premium Account & OTP</footer>
+  </main>
+
+  <div id="viewer" class="viewer" aria-hidden="true">
+    <div class="viewer-shell">
+      <div class="viewer-toolbar">
+        <button id="closeViewer" class="back" type="button" aria-label="กลับไปยังรายการข้อความ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></button>
+        <div><div class="toolbar-title">รายละเอียดข้อความ</div><div class="toolbar-sub">MONTYSTORE Mail Center</div></div>
+      </div>
+      <div class="viewer-content">
+        <h2 id="viewerSubject" class="viewer-subject"></h2>
+        <div class="viewer-sender-row">
+          <div id="viewerAvatar" class="viewer-avatar">M</div>
+          <div class="viewer-sender-main"><div id="viewerFrom" class="viewer-from"></div><div id="viewerTo" class="viewer-to"></div></div>
+          <time id="viewerDate" class="viewer-date"></time>
+        </div>
+        <div id="viewerOtp" class="viewer-otp"><span id="viewerOtpCode"></span><button id="viewerCopy" class="copy" type="button">คัดลอก</button></div>
+        <div class="email-stage">
+          <div id="emailLoading" class="email-loading"><span class="spinner"></span><span>กำลังโหลดข้อความ…</span></div>
+          <iframe id="emailFrame" class="email-frame" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer" title="เนื้อหาอีเมล"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form=document.getElementById('searchForm'),emailInput=document.getElementById('email'),submit=document.getElementById('submit'),submitText=submit.querySelector('span'),appChoices=[...document.querySelectorAll('.app-choice')],status=document.getElementById('status'),list=document.getElementById('list'),resultsHead=document.getElementById('resultsHead'),refresh=document.getElementById('refresh'),viewer=document.getElementById('viewer'),closeViewerButton=document.getElementById('closeViewer'),viewerSubject=document.getElementById('viewerSubject'),viewerAvatar=document.getElementById('viewerAvatar'),viewerFrom=document.getElementById('viewerFrom'),viewerTo=document.getElementById('viewerTo'),viewerDate=document.getElementById('viewerDate'),viewerOtp=document.getElementById('viewerOtp'),viewerOtpCode=document.getElementById('viewerOtpCode'),viewerCopy=document.getElementById('viewerCopy'),emailLoading=document.getElementById('emailLoading'),emailFrame=document.getElementById('emailFrame');
+    const MESSAGE_TTL_MS=15*60*1000;
+    let activeEmail='',activeApp='',expiryTimer=null;
+    appChoices.forEach(choice=>choice.addEventListener('click',()=>selectApp(choice.dataset.app)));
+    form.addEventListener('submit',event=>{event.preventDefault();searchMailbox()});refresh.addEventListener('click',searchMailbox);closeViewerButton.addEventListener('click',closeViewer);viewerCopy.addEventListener('click',()=>copyOtp(viewerOtpCode.textContent,viewerCopy));document.addEventListener('keydown',event=>{if(event.key==='Escape'&&viewer.classList.contains('open'))closeViewer()});
+    function selectApp(app){activeApp=app;appChoices.forEach(choice=>{const selected=choice.dataset.app===app;choice.classList.toggle('selected',selected);choice.setAttribute('aria-pressed',String(selected))});emailInput.disabled=false;emailInput.placeholder='example@maillys.shop';submit.disabled=false;status.textContent='';resultsHead.classList.remove('visible');list.replaceChildren();emailInput.focus()}
+    function searchMailbox(){const email=emailInput.value.trim().toLowerCase();if(!activeApp)return showError('กรุณาเลือก Netflix หรือ Disney+ ก่อน');if(!/^[a-z0-9._+-]+@maillys\.shop$/i.test(email))return showError('กรุณากรอกอีเมลที่ลงท้ายด้วย @maillys.shop');activeEmail=email;setLoading(true);resultsHead.classList.remove('visible');list.replaceChildren();google.script.run.withSuccessHandler(renderResults).withFailureHandler(error=>{showError(error&&error.message?error.message:'ค้นหาไม่สำเร็จ กรุณาลองใหม่');setLoading(false,true)}).getMessages({email:email,app:activeApp})}
+    function setLoading(loading,keep=false){submit.disabled=loading||!activeApp;submitText.textContent=loading?'กำลังค้นหา…':'รับรหัส';if(loading)status.innerHTML='<span class="spinner"></span><span>กำลังตรวจสอบข้อความ…</span>';else if(!keep)status.textContent=''}
+    function renderResults(data){setLoading(false);const appName=data.app==='disney'?'Disney+':'Netflix';status.className='status';status.textContent=`พบ ${data.count} ข้อความจาก ${appName} สำหรับ ${data.email}`;resultsHead.classList.add('visible');if(expiryTimer)clearInterval(expiryTimer);if(!data.messages.length)return renderEmpty();data.messages.forEach(message=>list.appendChild(createCard(message)));expiryTimer=setInterval(updateExpiredCards,1000)}
+    function renderEmpty(){const box=document.createElement('div');box.className='empty';box.innerHTML='<div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16v12H4z"/><path d="m4 8 8 6 8-6"/></svg></div><strong>ยังไม่มีข้อความ</strong><span>ยังไม่พบอีเมลที่ส่งมายังที่อยู่นี้</span>';list.appendChild(box)}
+    function createCard(message){
+      const article=document.createElement('article');article.className='message';article.dataset.receivedAt=message.date;
+      const head=document.createElement('div');head.className='message-head';head.role='button';head.tabIndex=0;
+      const top=document.createElement('div');top.className='message-top';
+      const sender=document.createElement('div');sender.className='sender';sender.textContent=initial(message.from);
+      const main=document.createElement('div');main.className='message-main';
+      const row=document.createElement('div');row.className='subject-row';
+      const subject=document.createElement('div');subject.className='subject';subject.textContent=message.subject;
+      const time=document.createElement('time');time.textContent=formatDate(message.date);
+      const from=document.createElement('div');from.className='from';from.textContent=`จาก: ${message.from}`;
+      row.append(subject,time);main.append(row,from);top.append(sender,main);head.append(top);
+      if(message.preview){const preview=document.createElement('div');preview.className='preview';preview.textContent=message.preview;head.append(preview)}
+      const meta=document.createElement('div');meta.className='message-meta';
+      if(message.otp){const otp=document.createElement('div');otp.className='otp';const code=document.createElement('span');code.textContent=`OTP ${message.otp}`;const copy=document.createElement('button');copy.type='button';copy.className='copy';copy.textContent='คัดลอก';copy.addEventListener('click',event=>{event.stopPropagation();copyOtp(message.otp,copy)});otp.append(code,copy);meta.append(otp)}
+      const viewLink=document.createElement('span');viewLink.className='view';viewLink.innerHTML='ดูข้อความ <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>';meta.append(viewLink);head.append(meta);
+      const open=()=>{if(isMessageExpired(message.date)){markCardExpired(article);return}openViewer(message)};
+      head.addEventListener('click',open);head.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();open()}});article.append(head);
+      if(message.expired||isMessageExpired(message.date))markCardExpired(article);
+      return article;
+    }
+    function isMessageExpired(date){const receivedAt=new Date(date).getTime();return !Number.isFinite(receivedAt)||Date.now()-receivedAt>=MESSAGE_TTL_MS}
+    function markCardExpired(article){if(article.classList.contains('expired'))return;article.classList.add('expired');const head=article.querySelector('.message-head');if(head){head.removeAttribute('role');head.tabIndex=-1}article.querySelectorAll('.otp,.preview').forEach(node=>node.remove());const overlay=document.createElement('div');overlay.className='expired-overlay';overlay.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/></svg><span>ข้อความหมดอายุ</span>';article.append(overlay)}
+    function updateExpiredCards(){list.querySelectorAll('.message:not(.expired)').forEach(card=>{if(isMessageExpired(card.dataset.receivedAt))markCardExpired(card)})}
+    function openViewer(message){viewer.classList.add('open');viewer.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';viewerSubject.textContent=message.subject;viewerAvatar.textContent=initial(message.from);viewerFrom.textContent=message.from;viewerTo.textContent=`ถึง ${activeEmail}`;viewerDate.textContent=formatDate(message.date);setViewerOtp(message.otp);emailFrame.classList.remove('ready');emailFrame.removeAttribute('srcdoc');emailFrame.style.height='420px';emailLoading.style.display='flex';emailLoading.innerHTML='<span class="spinner"></span><span>กำลังโหลดข้อความ…</span>';google.script.run.withSuccessHandler(renderViewer).withFailureHandler(error=>{emailLoading.textContent=error&&error.message?error.message:'โหลดข้อความไม่สำเร็จ กรุณาลองใหม่'}).getMessageContent(message.id,activeEmail,activeApp)}
+    function renderViewer(data){viewerSubject.textContent=data.subject;viewerAvatar.textContent=initial(data.from);viewerFrom.textContent=data.from;viewerTo.textContent=`ถึง ${data.to}`;viewerDate.textContent=formatDate(data.date);setViewerOtp(data.otp);emailFrame.onload=()=>{emailLoading.style.display='none';emailFrame.classList.add('ready');resizeEmailFrame();setTimeout(resizeEmailFrame,350);setTimeout(resizeEmailFrame,1200)};emailFrame.srcdoc=data.htmlBody}
+    function resizeEmailFrame(){try{const doc=emailFrame.contentDocument;const body=doc&&doc.body;const root=doc&&doc.documentElement;const height=Math.max(body?body.scrollHeight:0,root?root.scrollHeight:0,420);emailFrame.style.height=Math.min(height+4,5000)+'px'}catch(error){emailFrame.style.height='900px'}}
+    function closeViewer(){viewer.classList.remove('open');viewer.setAttribute('aria-hidden','true');document.body.style.overflow='';emailFrame.classList.remove('ready');emailFrame.removeAttribute('srcdoc');emailFrame.onload=null}
+    function setViewerOtp(code){viewerOtpCode.textContent=code||'';viewerOtp.classList.toggle('visible',Boolean(code));viewerCopy.textContent='คัดลอก'}
+    function copyOtp(code,button){if(!code)return;navigator.clipboard.writeText(code).then(()=>{button.textContent='คัดลอกแล้ว';setTimeout(()=>button.textContent='คัดลอก',1500)}).catch(()=>{button.textContent='คัดลอกไม่ได้';setTimeout(()=>button.textContent='คัดลอก',1500)})}
+    function formatDate(value){return new Intl.DateTimeFormat('th-TH',{dateStyle:'medium',timeStyle:'short'}).format(new Date(value))}
+    function initial(from){const clean=String(from||'').replace(/[<"']/g,'').trim();return(clean.charAt(0)||'M').toUpperCase()}
+    function showError(message){status.className='status error';status.textContent=message}
+  </script>
+</body>
+</html>
